@@ -14,7 +14,9 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
 ## Loading the Data
 drug_df = pd.read_csv("./Data/drug.csv")  # Load the dataset from a CSV file
-drug_df = drug_df.sample(frac=1)  # Shuffle the dataset to ensure random distribution of samples
+drug_df = drug_df.sample(
+    frac=1
+)  # Shuffle the dataset to ensure random distribution of samples
 
 ## Train Test Split
 from sklearn.model_selection import train_test_split
@@ -34,27 +36,49 @@ num_col = [0, 4]  # List of numerical columns (column indices 0 and 4)
 # Create a ColumnTransformer to apply different preprocessing steps to different columns
 transform = ColumnTransformer(
     [
-        ("encoder", OrdinalEncoder(), cat_col),  # Apply OrdinalEncoder to the categorical columns
-        ("num_imputer", SimpleImputer(strategy="median"), num_col),  # Handle missing values in numerical columns using median
-        ("num_scaler", StandardScaler(), num_col),  # Scale numerical columns to have zero mean and unit variance
+        (
+            "encoder",
+            OrdinalEncoder(),
+            cat_col,
+        ),  # Apply OrdinalEncoder to the categorical columns
+        (
+            "num_imputer",
+            SimpleImputer(strategy="median"),
+            num_col,
+        ),  # Handle missing values in numerical columns using median
+        (
+            "num_scaler",
+            StandardScaler(),
+            num_col,
+        ),  # Scale numerical columns to have zero mean and unit variance
     ]
 )
 
 # Create a pipeline to streamline the entire process (preprocessing + model training)
 pipe = Pipeline(
     steps=[
-        ("preprocessing", transform),  # First step: apply the ColumnTransformer for preprocessing
-        ("model", RandomForestClassifier(n_estimators=10, random_state=125)),  # Second step: fit a RandomForestClassifier model
+        (
+            "preprocessing",
+            transform,
+        ),  # First step: apply the ColumnTransformer for preprocessing
+        (
+            "model",
+            RandomForestClassifier(n_estimators=10, random_state=125),
+        ),  # Second step: fit a RandomForestClassifier model
     ]
 )
 
 ## Model Training
-pipe.fit(X_train, y_train)  # Train the pipeline (preprocessing + model) on the training data
+pipe.fit(
+    X_train, y_train
+)  # Train the pipeline (preprocessing + model) on the training data
 
 ## Model Evaluation
 predictions = pipe.predict(X_test)  # Make predictions on the test data
 accuracy = accuracy_score(y_test, predictions)  # Calculate accuracy score
-f1 = f1_score(y_test, predictions, average="macro")  # Calculate F1 score (macro-averaged for multi-class classification)
+f1 = f1_score(
+    y_test, predictions, average="macro"
+)  # Calculate F1 score (macro-averaged for multi-class classification)
 
 # Print the evaluation metrics
 print("Accuracy:", str(round(accuracy, 2) * 100) + "%", "F1:", round(f1, 2))
@@ -64,10 +88,16 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
 # Generate the confusion matrix and plot it
-cm = confusion_matrix(y_test, predictions, labels=pipe.classes_)  # Compute the confusion matrix
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=pipe.classes_)  # Create a confusion matrix display
+cm = confusion_matrix(
+    y_test, predictions, labels=pipe.classes_
+)  # Compute the confusion matrix
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm, display_labels=pipe.classes_
+)  # Create a confusion matrix display
 disp.plot()  # Plot the confusion matrix
-plt.savefig("./Results/model_results.png", dpi=120)  # Save the plot as a PNG image in the 'Results' folder
+plt.savefig(
+    "./Results/model_results.png", dpi=120
+)  # Save the plot as a PNG image in the 'Results' folder
 
 ## Write metrics to file
 # Save accuracy and F1 score to a text file in the 'Results' folder
