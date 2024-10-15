@@ -9,7 +9,6 @@ trusted_types = ['numpy.dtype']
 pipe = sio.load("./Model/drug_pipeline.skops", trusted=trusted_types)
 
 
-
 def predict_drug(age, sex, blood_pressure, cholesterol, na_to_k_ratio):
     """Predict drugs based on patient features.
 
